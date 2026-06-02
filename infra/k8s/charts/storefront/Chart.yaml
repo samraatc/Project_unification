@@ -1,0 +1,9 @@
+apiVersion: v2
+name: unified-storefront
+description: Unified Platform customer storefront (Next.js 14)
+type: application
+version: 0.1.0
+appVersion: "0.0.0"
+maintainers:
+  - name: Elskov Platform
+    email: elskovservices@gmail.com

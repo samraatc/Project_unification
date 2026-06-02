@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+.next
+.turbo
+coverage
+storybook-static
+pnpm-lock.yaml
+*.tsbuildinfo
+packages/sdk/src/generated
+apps/api/openapi.generated.json

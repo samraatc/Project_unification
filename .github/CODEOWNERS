@@ -1,0 +1,14 @@
+# Per Sprint-Plan.md §1 team profile. Until GitHub teams are provisioned,
+# all reviews route to the Elskov Services owners group.
+
+*                       @elskovservices/platform
+/apps/api/              @elskovservices/backend
+/apps/worker/           @elskovservices/backend
+/apps/webhook/          @elskovservices/backend
+/apps/storefront/       @elskovservices/frontend
+/apps/admin/            @elskovservices/frontend
+/apps/accounting/       @elskovservices/frontend
+/packages/design-system/ @elskovservices/design @elskovservices/frontend
+/packages/motion/       @elskovservices/design @elskovservices/frontend
+/infra/                 @elskovservices/devops
+/docs/                  @elskovservices/platform

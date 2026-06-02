@@ -1,0 +1,68 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Unified Platform API",
+    "version": "0.0.0",
+    "description": "REST contract for the Unified Marketing & E-Commerce Management Platform. Source: zod-to-openapi registry. Regenerate with `pnpm --filter @unified/api openapi:generate`."
+  },
+  "servers": [{ "url": "http://localhost:4000", "description": "Local dev" }],
+  "paths": {
+    "/healthz": {
+      "get": {
+        "summary": "Liveness probe",
+        "tags": ["health"],
+        "responses": {
+          "200": {
+            "description": "Alive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "uptime": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/readyz": {
+      "get": {
+        "summary": "Readiness probe",
+        "tags": ["health"],
+        "responses": {
+          "200": { "description": "Ready" },
+          "503": { "description": "Degraded" }
+        }
+      }
+    },
+    "/api/v1/ping": {
+      "get": {
+        "summary": "Smoke endpoint",
+        "tags": ["health"],
+        "responses": {
+          "200": {
+            "description": "Service is up",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["pong", "service", "version", "ts"],
+                  "properties": {
+                    "pong": { "type": "boolean", "enum": [true] },
+                    "service": { "type": "string" },
+                    "version": { "type": "string" },
+                    "ts": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

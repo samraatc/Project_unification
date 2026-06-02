@@ -1,0 +1,7 @@
+{
+  "extends": "@unified/tsconfig/library.json",
+  "compilerOptions": {
+    "baseUrl": "."
+  },
+  "include": ["src/**/*"]
+}

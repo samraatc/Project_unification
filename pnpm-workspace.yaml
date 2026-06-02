@@ -1,0 +1,4 @@
+# pnpm workspace map. Mirrors TRD §2 repo layout.
+packages:
+  - "apps/*"
+  - "packages/*"

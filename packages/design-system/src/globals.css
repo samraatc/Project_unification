@@ -1,0 +1,111 @@
+/**
+ * Global CSS variables for the Unified Platform.
+ * Source of truth: packages/design-system/design-tokens/tokens.json
+ * Regenerate the machine-readable copy with `pnpm tokens:build`.
+ */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand */
+  --brand-primary: #6366f1;
+  --brand-primary-hover: #4f46e5;
+  --brand-secondary: #14b8a6;
+  --brand-accent: #f59e0b;
+
+  /* Neumorphic surface — light theme */
+  --surface-bg: #e8ecf3;
+  --surface-raised: #ecf0f7;
+  --surface-sunken: #dde3ee;
+  --shadow-light: #ffffff;
+  --shadow-dark: #c8cfdb;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-inverse: #f8fafc;
+
+  /* Semantic */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Shadows */
+  --shadow-neu-raised: 9px 9px 18px var(--shadow-dark), -9px -9px 18px var(--shadow-light);
+  --shadow-neu-sunken: inset 6px 6px 12px var(--shadow-dark),
+    inset -6px -6px 12px var(--shadow-light);
+  --shadow-neu-soft: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
+  --shadow-neu-hover: 14px 14px 28px var(--shadow-dark), -14px -14px 28px var(--shadow-light);
+}
+
+[data-theme='dark'] {
+  --surface-bg: #1e2230;
+  --surface-raised: #232838;
+  --surface-sunken: #181c28;
+  --shadow-light: #2a3042;
+  --shadow-dark: #12141c;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #64748b;
+  --text-inverse: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --surface-bg: #1e2230;
+    --surface-raised: #232838;
+    --surface-sunken: #181c28;
+    --shadow-light: #2a3042;
+    --shadow-dark: #12141c;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #64748b;
+    --text-inverse: #0f172a;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+body {
+  background-color: var(--surface-bg);
+  color: var(--text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--surface-sunken) 0%,
+    var(--surface-raised) 50%,
+    var(--surface-sunken) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: 14px;
+}
+
+*:focus-visible {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 2px;
+}
