@@ -1,0 +1,98 @@
+# Test Plan
+
+**Project:** Unified Marketing & E-Commerce Management Platform
+**Test Pyramid:** Unit (70%) → Integration (20%) → E2E (10%)
+**Version:** 1.0
+
+---
+
+## 1. Test Strategy
+
+Quality is built in, not bolted on. The test pyramid emphasises fast unit tests at the base, a layer of integration tests against real Mongo and Redis containers in the middle, and a thin e2e layer covering user-journey golden paths through Playwright. On top of the pyramid sit specialised test types — performance, security, accessibility, contract — each owned and run on a defined cadence.
+
+Coverage targets are statement-level: 80% on `apps/api`, 75% on `apps/storefront` and `apps/admin`. Coverage is a leading indicator, not a goal; reviewers reject low-quality tests that hit lines without asserting behaviour.
+
+## 2. Test Types
+
+### 2.1 Unit Tests
+
+Tooling: Vitest with `@testing-library/react` for components and `mongoose-mock-types` plus a thin DAO mock for service-layer tests. Unit tests run in milliseconds, are deterministic, and have no I/O. Each domain service has unit tests covering happy path, every error branch, and every guard clause. React components have unit tests covering: renders for each prop permutation; user interaction via `userEvent`; accessibility role queries.
+
+Naming: `<unit>.spec.ts` colocated with the source file. CI fails the build on any failure.
+
+### 2.2 Integration Tests
+
+Tooling: Vitest + Testcontainers running Mongo 7 and Redis 7. Tests exercise the API end-to-end at the HTTP boundary using `supertest`; the DB is seeded per test from typed fixtures. Each test runs in its own database to avoid cross-test contamination. Workers are tested similarly with BullMQ test mode.
+
+Coverage targets: every API route has at least a happy-path test, a permission-denied test (for RBAC and entitlement), and an invalid-input test (for the Zod validator).
+
+### 2.3 Contract Tests
+
+OpenAPI spec is the contract. Provider tests assert that the API matches the spec on every endpoint; consumer tests assert that the SDK can parse the spec. A breaking change to the spec fails CI unless flagged with a major-version bump.
+
+RBAC and entitlement guards are validated by a contract suite that walks every premium route and asserts `403` for non-entitled tenants and `200` for entitled ones. This suite is required to pass before any release that touches the accounting domain.
+
+### 2.4 End-to-End Tests (E2E)
+
+Tooling: Playwright. E2E covers user-journey golden paths only — the test pyramid stays inverted-friendly.
+
+Customer journeys (storefront): register → email OTP → login; browse → filter → PDP → add to cart → coupon → checkout → eSewa sandbox payment → confirmation → live tracking; return request → refund.
+
+Admin journeys: login with 2FA → publish a social post → schedule a post → see inbox message → assign and reply → process an order → assign courier → bulk update.
+
+Accountant journeys: login → view auto-posted journal entries for the day → run P&L → export VAT 200 → export audit pack.
+
+E2E tests run nightly against staging and pre-release against a release-candidate environment. They do not gate every PR; only smoke tests gate PRs.
+
+### 2.5 Performance Tests
+
+Tooling: k6. Scenarios:
+
+- **Catalogue browse load.** 1,000 concurrent users browsing PLP + PDP for 30 minutes; target p95 LCP < 2.5s, p95 API < 300ms.
+- **Flash sale.** 5,000 concurrent checkout attempts in 60 seconds; target zero overselling, p95 checkout-to-paid < 2s, gateway success rate matching baseline.
+- **Search autocomplete.** 500 rps for 10 minutes; target p95 < 100ms.
+- **Real-time fanout.** 10,000 connected Socket.IO clients; broadcast an inbox event; target p95 delivery < 500ms.
+
+Performance tests run weekly against staging and pre-release on the release candidate. A 10% regression on any p95 metric blocks the release.
+
+### 2.6 Security Tests
+
+See `04-security/Security-Audit.md` for the full plan. The CI-gated portion includes Semgrep (SAST), Snyk (deps), Gitleaks (secrets), Trivy (containers), and a nightly OWASP ZAP run on staging.
+
+### 2.7 Accessibility Tests
+
+Tooling: axe-core via Playwright and Storybook. Every Storybook story includes an axe assertion; failures break Storybook CI. Lighthouse accessibility audits run nightly on staging for the home, PLP, PDP, cart, checkout, profile, orders pages and must score ≥ 95.
+
+### 2.8 Visual Regression
+
+Tooling: Playwright screenshots + Percy (or Chromatic). Captures every Storybook story and every key route's hero state. Diffs reviewed in the PR. Excludes animated regions via masking to avoid Framer Motion false positives.
+
+### 2.9 Migration Tests
+
+Every Mongo migration includes a forward test (apply on a fixture DB, assert the expected shape) and a rollback test where possible. The pipeline applies migrations against a staging-shape DB before any production deploy.
+
+## 3. Test Data Management
+
+Fixtures are typed (`@platform/shared-types`) and generated by `@faker-js/faker` with deterministic seeds. Production data is never used in non-production environments; staging seeds are synthetic with realistic distributions.
+
+PII in test data is fully synthetic. If a real-world dataset is needed for performance testing, it is anonymised with documented techniques (k-anonymity, value-substitution) before import.
+
+## 4. Test Environments
+
+Unit tests run on the developer machine and on CI runners with no external dependencies. Integration tests run on CI with Testcontainers. E2E and performance tests run on dedicated runners against staging. Security DAST runs against staging. Pre-release tests run against a release-candidate environment that mirrors production at small scale.
+
+## 5. Definition of Done (per PR)
+
+The PR includes new tests for new behaviour; existing tests still pass; coverage does not regress more than 1 percentage point on the changed files; the OpenAPI spec is updated for any new or changed endpoint; the Storybook story is updated for any UI component change; the migration is provided and tested for any schema change; security and accessibility checks pass; one approving review.
+
+## 6. Definition of Done (per Phase)
+
+The phase is considered complete when all FRs in the phase's scope pass their acceptance tests; the performance budget is met under load test; the security scan returns no Critical and no open High findings; UAT sign-off is recorded for that phase; documentation in this folder is updated; and the demo to the Project Sponsor is delivered and accepted.
+
+## 7. Test Ownership
+
+Engineers write and own unit and integration tests for their code. The QA Engineer owns the e2e suite and authors performance scenarios. The Security Lead owns SAST/DAST/dependency scans. The Designer owns visual regression and accessibility. The Tech Lead owns contract tests.
+
+## 8. Reporting
+
+Test results are surfaced on the PR page (GitHub Checks) and on the Datadog test dashboard. Coverage trend is tracked weekly. Flaky tests are quarantined and tracked in a flake board; a flake that lives more than two weeks is owned by the team that wrote it for a root-cause fix.

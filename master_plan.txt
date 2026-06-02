@@ -1,0 +1,823 @@
+   UNIFIED MARKETING &
+E-COMMERCE MANAGEMENT
+                    PLATFORM
+Comprehensive Project Plan, Architecture & Premium Accounting Module
+
+
+
+
+                       Version 2.0 | May 2026
+
+                    CONFIDENTIAL — INTERNAL USE
+
+                      Prepared for: Elskov Services
+1. Executive Summary
+This document is the consolidated master plan for the Unified Marketing and E-Commerce Management
+Platform — a single, role-controlled web application that brings together five tightly integrated capabilities
+into one product:
+   Centralised social media control across Facebook, Instagram and TikTok — compose once, publish
+    everywhere, reply from a single inbox.
+   A full e-commerce engine with product catalogue, cart, checkout, multi-gateway payments (eSewa,
+    Khalti, card) and customer self-service.
+   End-to-end order tracking and inventory management — every sale auto-deducts stock, every return
+    auto-restocks, every status change auto-notifies.
+   Granular Role-Based Access Control with Super Admin, Admin, Editor, Accountant, Viewer and
+    unlimited custom roles.
+   A premium Accounting & Audit module unlocked via monthly, yearly or lifetime subscription — full
+    double-entry ledger, VAT/GST, immutable audit trail and regulator-ready reports.
+The platform replaces 5–7 separate SaaS tools that businesses typically stitch together (a social scheduler,
+an inbox tool, a storefront platform, an order/inventory app and an accounting system). By consolidating
+them into one product with a shared identity layer, RBAC engine and database, it eliminates duplicate data
+entry, removes integration drift, and gives leadership a single source of truth across marketing, sales,
+fulfilment and finance.
+
+1.1 What this report contains
+   Project objectives, scope and success criteria.
+   Detailed specifications for every module — including new screens, data and APIs.
+   Role and permission matrix.
+   Premium Accounting & Subscription module (full deep-dive, new in v2.0).
+   System architecture diagram and end-to-end flow diagram.
+   Technology stack, database design and security model.
+   Phased delivery roadmap with timelines and dependencies.
+   Indicative budget in USD and NPR, plus team structure.
+   Risk register, KPIs and next-step checklist.
+2. Project Objectives & Scope
+2.1 Business Objectives
+   Eliminate tool fragmentation by consolidating social media management, e-commerce, fulfilment and
+    accounting into one platform.
+   Increase team productivity through role-based workspaces that surface only the tools and data each
+    user needs.
+   Enable data-driven decisions by unifying analytics across social channels, sales, inventory turnover and
+    finance.
+   Open a recurring-revenue stream by offering the Accounting module as a paid, subscription-gated add-
+    on (monthly / yearly / lifetime).
+   Ensure security and compliance — robust authentication, immutable audit logging, RBAC enforcement,
+    GDPR-aligned data handling.
+   Scale gracefully to multi-warehouse, multi-currency and additional social channels without re-
+    architecting.
+
+2.2 In Scope
+   Public storefront with full catalogue, cart and checkout.
+   Customer profile, address book, wishlist, order history and tracking.
+   Admin web console for social, catalogue, orders, inventory, CRM, finance.
+   Payment integrations: eSewa, Khalti, Stripe (card), Cash-on-Delivery.
+   Social integrations: Meta Graph API (Facebook + Instagram), TikTok API.
+   Premium Accounting module with subscription paywall.
+   Mobile-responsive (PWA) — no native mobile apps in this phase.
+   Cloud deployment (AWS or GCP), CI/CD, monitoring and backups.
+
+2.3 Out of Scope (this release)
+   Native iOS / Android apps (planned for Phase 2 / Year 2).
+   B2B wholesale portal with negotiated pricing tiers (future enhancement).
+   Physical POS hardware integration in retail stores (future enhancement).
+   Marketplace functionality (multi-vendor sellers) — single-tenant only.
+3. Platform Modules — Detailed Specification
+3.1 Social Media Management Hub
+A single control panel for Facebook, Instagram and TikTok. Connects to each platform via the official
+business API and abstracts platform-specific formatting rules behind one composer.
+
+Core Features
+   Unified Post Composer — create one post, publish simultaneously to all connected channels with
+    platform-specific overrides for caption length, hashtags and media dimensions.
+   Content Scheduler — calendar view to plan posts days or weeks ahead; best-time-to-post
+    recommendations driven by historical engagement; draft saving and approval workflow before publish.
+   Unified Inbox — aggregates comments, DMs and mentions from all channels into one queue; reply in-
+    platform; assign conversations to teammates; track resolution status and response-time SLAs.
+   Analytics Dashboard — follower growth, reach, impressions, engagement rate per channel; post
+    performance comparison across channels; exportable reports as PDF or Excel.
+   Media Library — central asset store (S3-backed) with tags, search and re-use across posts.
+   Approval Workflow — drafts can require sign-off from an Admin before publishing, enforced via RBAC.
+
+3.2 E-Commerce Engine
+Full operational control over the online store, from product listing to order fulfilment and payment
+reconciliation.
+
+Core Features
+   Product Catalogue Manager — CRUD, image management, variant trees (size/colour/material),
+    category hierarchies, bulk CSV import.
+   Pricing & Promotions — base price, discount, scheduled sales, coupon engine (percentage / flat / free-
+    ship / BOGO), customer-segment-specific offers.
+   Order Management — view, filter, process all orders; full status workflow (Pending → Confirmed →
+    Processing → Shipped → Delivered → Returned).
+   Payments & Invoicing — eSewa, Khalti, Stripe and Cash-on-Delivery; auto-generated PDF invoices;
+    refund processing and dispute notes.
+   Customer Management (CRM Lite) — profile, order history, communication log, tagging, segmentation
+    for marketing.
+   Storefront SEO — server-side rendering, structured data (JSON-LD), sitemap and robots.txt
+    management, Open Graph metadata for social sharing.
+
+3.3 End User (Customer) Portal
+The public-facing website where customers register, browse, shop, pay and track orders — fully responsive
+across desktop, tablet and mobile.
+
+3.3.1 Registration & Profile
+   Sign-up via Email + Password (with email OTP verification), Phone + SMS OTP, or Social Login (Google /
+    Facebook OAuth 2.0).
+   Profile fields: name, email, phone, password (bcrypt), avatar, date of birth, gender, addresses (up to 5
+    labelled — Home / Work / Other), default address, linked eSewa / Khalti wallets, notification
+    preferences, wishlist, order history, GDPR-compliant data export and delete-account flows.
+
+3.3.2 Product Browsing & Discovery
+   Homepage with hero carousel, category grid, featured / trending / flash-sale sections, recently-viewed
+    products.
+   Product Listing Page (PLP) — grid / list view toggle, sort (newest, price, popularity, rating), filter sidebar
+    (category, brand, price slider, star rating, in-stock, discount band), infinite scroll or pagination.
+   Product Detail Page (PDP) — image gallery with zoom, variant selector with live stock check, tabbed
+    description / specs / reviews / Q&A, delivery ETA by pin code, related and frequently-bought-together
+    suggestions.
+   Global search with auto-suggest (Elasticsearch / Meilisearch), saved search history for logged-in users.
+
+3.3.3 Cart, Checkout & Payment
+   Persistent cart for logged-in users; guest cart auto-migrates on login; real-time stock validation on
+    quantity change.
+   Coupon and promotions engine with instant validation; loyalty-points redemption (when enabled).
+   5-step checkout: Address → Delivery Method → Review → Payment → Confirmation. Guest checkout
+    supported (email required).
+   Payment options: eSewa (signed redirect flow), Khalti (popup + Lookup API), Visa / MasterCard via
+    Stripe with 3-D Secure 2, Cash on Delivery.
+   Payment failure handling: order held in Pending for 24h, retry-payment link, alternative-method
+    suggestion, abandoned-checkout email after 1h.
+
+3.3.4 Post-Purchase
+   My Orders dashboard — active orders highlighted, full history, reorder button, invoice download.
+   Live order tracking — visual status stepper, courier scan timeline, dynamic ETA, map view where the
+    courier supports GPS.
+   Guest tracking page at /track using Order ID + Email / Phone.
+   Verified reviews and ratings; helpful-vote system; photo / video uploads.
+   Returns within configurable window (default 7 days) with reason + photo; refunds auto-routed to
+    original wallet / card via the relevant API.
+   Support — live chat widget, searchable Help Centre, ticketing tied to specific orders, optional
+    WhatsApp Business integration.
+
+3.4 Order Tracking & Inventory Management
+The operational heart of the platform — tightly coupled with the catalogue and payment systems via
+atomic database transactions.
+
+3.4.1 Admin Order Operations
+   Orders dashboard with summary tiles (Today, Pending Payments, To Dispatch, Returns Pending) and
+    full table with filters and search.
+   Order detail panel: customer info, line items, pricing breakdown, address, payment info, status history,
+    internal notes, action buttons.
+   Bulk operations — status update, courier assign, invoice / label print.
+   Courier registry with auto-tracking-link generation; optional Pathao / Aramex webhook ingestion for
+    fully automated status updates.
+
+3.4.2 Inventory Management
+   Live stock per SKU and per variant, with reserved-vs-available split.
+   Stock adjustment with reason and audit trail.
+   Low-stock alerts (configurable threshold) — dashboard banner, email, SMS.
+   Out-of-stock handling with customer 'Notify Me' subscriptions and auto-restock notifications.
+   Bulk CSV import; barcode / QR scan intake (optional mobile companion).
+   Purchase Order (PO) workflow: Draft → Sent → Partially Received → Fully Received.
+   Stock movement log — every in/out event with type, qty, balance, user, reference (order ID / PO ID),
+    filterable and exportable.
+
+3.4.3 Customer Order Tracking
+   My Orders list with status badges, quick reorder.
+   Order detail with visual progress bar (Placed → Confirmed → Processing → Shipped → Delivered) and
+    timestamp per stage.
+   Live shipment tracking widget with courier name, tracking number and direct courier link; courier-API-
+    pushed scan events when available.
+   Customer actions: cancel (until Processing), download invoice, request return, view refund status, write
+    review, reorder.
+
+3.4.4 Notification Triggers
+Email + SMS + Push fire automatically on each business event; customers can opt out per channel in their
+profile. Admin-only events (low stock, payment failure spike) route to the admin dashboard and an internal
+email list.
+4. Role-Based Access Control (RBAC)
+RBAC is a foundational, cross-cutting layer of the platform. Every API route is guarded by middleware that
+checks the caller's role(s) and permission(s) before processing the request. Roles can be created, modified
+and assigned by Super Admins (and by Admins for any role below them).
+
+4.1 Role Definitions
+      Super Admin — unrestricted access; the only role allowed to manage other Super Admins, change
+       system settings, configure billing / Stripe Connect, and purge audit logs.
+      Admin — full operational control: social, e-commerce, CRM, analytics, user management for non-admin
+       roles; cannot modify Super Admins or system-level configuration.
+      Editor — content & catalogue: publish on social, edit products, update order status; no access to
+       finance or user management.
+      Accountant — finance focus: view revenue, invoices, payouts, reconciliation, exports; gateway to the
+       premium Accounting module if subscribed.
+      Viewer — read-only analytics for stakeholders / investors / juniors.
+      Custom Roles — Super Admins and Admins can compose roles from individual permissions (e.g. 'Social
+       Media Manager' = posting + analytics, no e-commerce).
+
+4.2 Permission Matrix
+Legend: ✓ Full · ✗ None · ~ Limited / partial · R Read-only
+    Permission /
+                      Super Admin      Admin            Editor            Accountant        Viewer
+    Feature
+
+    Create / Delete
+                      ✓                ✓                ✗                 ✗                 ✗
+    Users
+
+    Assign Roles      ✓                ✓                ✗                 ✗                 ✗
+
+    System Settings   ✓                ✗                ✗                 ✗                 ✗
+
+    Social Media
+                      ✓                ✓                ✓                 ✗                 ✗
+    Post
+
+    Social Media
+                      ✓                ✓                ✓                 ✗                 ✓
+    Analytics
+
+    Schedule Posts    ✓                ✓                ✓                 ✗                 ✗
+
+    E-Commerce
+                      ✓                ✓                ✓                 ✗                 ✗
+    Products (CRUD)
+
+    Orders — View
+                      ✓                ✓                ~                 R                 R
+    All
+
+    Orders —          ✓                ✓                ~                 ✗                 ✗
+Update Status
+
+Orders — Cancel
+                  ✓   ✓   ✗   ✗                   ✗
+/ Refund
+
+Inventory —
+                  ✓   ✓   ✗   ✗                   ✗
+Adjust Stock
+
+Inventory —
+                  ✓   ✓   R   ✓                   R
+View Reports
+
+View Financial
+                  ✓   ✓   ✗   ✓                   ✗
+Reports
+
+Premium
+Accounting        ✓   ✓   ✗   ✓ (if subscribed)   ✗
+Module
+
+Tax Module        ✓   ✓   ✗   ✓ (if subscribed)   ✗
+
+Audit Logs        ✓   ✓   ✗   R                   ✗
+
+Subscription /
+                  ✓   ✗   ✗   ✗                   ✗
+Billing Admin
+
+CRM /
+                  ✓   ✓   ✓   ~                   ✓
+Customers
+5. Premium Module — Accounting, Tax & Audit
+(Subscription-Gated)
+This is a paid add-on. Out of the box, every tenant receives the operational platform (sections 3 and 4). The
+Accounting, Tax and Audit module is subscription-gated and unlocks a complete double-entry accounting
+suite, tax computation and an immutable audit trail.
+
+5.1 Why It's Premium
+   Replaces a separate accounting subscription (Tally / QuickBooks / Xero / Zoho) — so the willingness-to-
+    pay already exists in the customer's budget.
+   Reduces double data entry by sourcing journal entries directly from real-time platform events (orders,
+    refunds, payouts, inventory write-offs).
+   Provides regulator-ready VAT / GST returns and audit packs — a compliance lifeline that justifies
+    recurring fees.
+   Creates predictable MRR / ARR for the platform vendor and a high-margin expansion path beyond the
+    base seat licence.
+
+5.2 Feature Set
+5.2.1 Double-Entry Ledger
+   Configurable Chart of Accounts (CoA) — pre-loaded templates for Retail, Services and Manufacturing;
+    editable.
+   Auto-generated journal entries from platform events — each order, refund, payout reconciliation, stock
+    write-off and PO receipt posts the correct debits and credits.
+   Manual journal entry interface for adjustments, accruals, depreciation.
+   Multi-currency support with daily FX rates; settlement currency configurable.
+   Period close: monthly / quarterly / yearly close with locking and reopening controls (Super Admin only).
+
+5.2.2 Tax Module
+   VAT / GST configuration per product or product category.
+   Tax computation at cart and invoice level; correct treatment of inclusive vs exclusive pricing,
+    exemptions and zero-rated items.
+   Tax-period returns: VAT 200 / GST returns in regulator-ready format; Nepal IRD (Inland Revenue
+    Department) e-invoice JSON export.
+   Withholding-tax handling on supplier payouts and commissions.
+   Tax-jurisdiction routing for international orders (placeholder for future OECD / DST changes).
+
+5.2.3 Reports & Statements
+   Profit & Loss (monthly, quarterly, yearly, custom range).
+   Balance Sheet with comparative periods.
+   Cash-flow statement (direct or indirect method).
+   Trial balance, general ledger, sub-ledger drill-down.
+      Aged receivables and payables.
+      Inventory valuation report (FIFO, weighted-average, configurable).
+      All reports exportable as PDF / Excel; scheduled email delivery option.
+
+5.2.4 Audit Trail
+      Immutable, append-only audit log of every accounting event — who, when, what, before / after values,
+       source (UI, API, automation).
+      WORM-style storage (write-once-read-many) to satisfy auditor requirements.
+      Audit pack export: zip of trial balance + GL + audit log + supporting documents, signed with a
+       cryptographic hash for tamper-evidence.
+      Read-only auditor user role — external auditor can be invited with time-bounded access, scoped to one
+       fiscal year.
+
+5.2.5 Bank Reconciliation
+      Import bank statements (CSV / OFX / direct API where available).
+      Auto-match rules engine with confidence score; manual override.
+      Outstanding-items report; reconciliation lock when complete.
+
+5.2.6 Budgeting & Forecasting
+      Annual budget setup per cost centre / department.
+      Actual-vs-budget variance reports with drill-down.
+      Cash-flow forecast using payment terms and historical conversion patterns.
+
+5.3 Subscription Plans
+    Plan                  Billing                 Indicative Price        Best For                 Key Benefits
+
+                                                                                                   Full feature access,
+    Free Trial            14 days                 $0                      Evaluation
+                                                                                                   100 transactions cap
+
+                                                  $29 / NPR 3,900 /                                Cancel anytime, all
+    Monthly               Per month                                       Small business
+                                                  month                                            reports, 1 user
+
+                                                                                                   Includes Tax Module
+                                                  $290 / NPR 39,000 /
+    Yearly                Per year                                        Growing SMB              + scheduled exports,
+                                                  year (save ≈17%)
+                                                                                                   3 users
+
+                                                                                                   Forever access at v1;
+                                                  $1,499 / NPR                                     major-version
+    Lifetime              One-off                                         Long-term commit
+                                                  199,000 (one-time)                               upgrades discounted
+                                                                                                   50%
+
+                                                                                                   Dedicated support,
+                                                                          Multi-entity / multi-
+    Enterprise            Custom                  Contact sales                                    SSO, advanced audit,
+                                                                          currency
+                                                                                                   on-prem option
+
+Prices are indicative for planning only. Final pricing should be set after competitive benchmarking against Tally,
+QuickBooks Online, Zoho Books and Xero in target markets.
+5.4 Feature Gating Logic
+   A central Subscription & Billing Engine stores each tenant's active plan, expiry date and feature
+    entitlements as a JSON blob.
+   Every accounting API route checks: (1) authenticated user, (2) RBAC role allows accounting, (3) tenant
+    has an active entitlement covering that feature.
+   UI components in the Accounting Portal are rendered conditionally on entitlements — locked features
+    show an upgrade prompt rather than an error.
+   Grace period of 7 days on expiry — read-only access, prevents data loss; after 14 days the data is
+    archived (export available on reactivation).
+   Lifetime plan is bound to a major version; major upgrades are sold separately at 50% of the then-
+    current lifetime price.
+
+5.5 Billing & Payment for the Subscription
+   Stripe Billing (international cards), eSewa and Khalti subscriptions (NPR market) — recurring charge
+    handled by the payment gateway.
+   Auto-invoice generation in the customer's name, with VAT line where applicable.
+   Dunning workflow on failed renewals: retry on day 1, 3, 7; downgrade automatically on day 14.
+   Customer-facing self-service: change plan, update card, download invoices, cancel subscription with
+    reason capture.
+
+5.6 Compliance & Regulatory Mapping (Nepal-first)
+   Nepal IRD: PAN integration, e-invoice JSON, VAT 200 return format.
+   Indian GST (when expanding): GSTR-1 and GSTR-3B export.
+   International readiness: IFRS-style P&L and Balance Sheet formats included.
+   Data residency: tenant data can be pinned to a specific cloud region (Enterprise plan).
+6. System Architecture
+The platform follows a layered, service-oriented architecture. The diagram below shows the six layers, the
+major components in each layer, and the primary integrations.
+
+
+
+
+                         Figure 1 — Unified Platform System Architecture (6-Layer View)
+
+6.1 Layer-by-Layer Walkthrough
+Client Layer
+   End Customers on browsers and mobile devices.
+   Admin Team users (Super Admin, Admin, Editor) on desktop browsers.
+   Accountants accessing the premium portal (subscription-gated).
+   Viewers / stakeholders consuming dashboards.
+   Courier partners and suppliers calling our webhook endpoints.
+
+Presentation Layer (Next.js Applications)
+   Customer Storefront — Next.js 14 with server-side rendering for SEO and fast first-paint; Tailwind CSS;
+    Redux Toolkit + React Query.
+   Admin Web Console — React-based SPA inside Next.js shell; component library shared with the
+    storefront.
+   Accounting Portal — separate route group with entitlement-aware components.
+   PWA layer — installable, offline cart cache, push notifications.
+
+Application Layer (API & Services)
+   API Gateway with rate limiting, request validation and WebSocket upgrade.
+   Auth & Identity service — registration, login, 2FA, JWT issuance, OAuth 2.0.
+   RBAC Engine — central policy decision point, evaluated on every request.
+   Subscription & Billing Engine — entitlements check, plan management, dunning.
+   Domain services — Social Media, E-Commerce, Inventory, Order State Machine, CRM & Messaging,
+    Accounting Core (Premium).
+
+Data Layer
+   PostgreSQL — primary relational store for users, roles, orders, inventory, subscriptions, ledger.
+   Redis — sessions, cart cache, rate-limit counters, job queue backplane.
+   Elasticsearch / Meilisearch — fast catalogue search and auto-suggest.
+   Object Storage (S3) — product images, invoice PDFs, social media assets.
+   Audit Logs DB — append-only, WORM-style storage for compliance.
+
+External Integrations
+   Meta Graph API (Facebook + Instagram), TikTok API.
+   eSewa, Khalti, Stripe / PayPal.
+   SendGrid / SMTP, Twilio / Sparrow SMS, Firebase Cloud Messaging.
+   Courier APIs (Pathao, Aramex) and Tax / IRD engine.
+
+Infrastructure
+   AWS or GCP — EC2 / EKS, CloudFront / Cloud CDN, S3 / GCS.
+   Containers via Docker + Kubernetes for horizontal auto-scaling.
+   CI/CD with GitHub Actions and Infrastructure-as-Code (Terraform).
+   Monitoring: Sentry (errors), Datadog or New Relic (APM and infra).
+   Security: WAF, TLS 1.3 in transit, AES-256 at rest, automated backups.
+7. End-to-End System Flow
+The flow diagram on the next page shows how an end-to-end customer purchase moves through the
+system, alongside the parallel administrative and accounting workflows that get triggered automatically.
+
+
+
+
+                             Figure 2 — End-to-End System Flow (Swim-Lane View)
+
+7.1 Walkthrough — A Typical Purchase
+1. Customer registers (or logs in) on the storefront — Auth & RBAC service issues a JWT.
+2. Customer browses the catalogue (served from PostgreSQL via Elasticsearch) and adds items to their
+   cart (cached in Redis).
+3. At checkout, the Order Service creates a Pending order, the inventory service reserves stock, and the
+   Payment Orchestrator initiates the selected gateway (eSewa / Khalti / Stripe).
+4. On payment verification, the State Machine transitions the order to Confirmed, fires Email + SMS +
+   Push notifications, and posts a journal entry to the Accounting Core (if the tenant has a Premium
+   subscription).
+5. Admin sees the order in real time via WebSocket; assigns courier; the courier webhook later pushes
+   Out-for-Delivery and Delivered events.
+6. Customer can track the order live, raise a return inside the return window, or rate the product after
+   delivery.
+7. Returns and refunds reverse the stock and post the offsetting journal entries, keeping inventory,
+   finance and customer records consistent.
+7.2 Cross-Cutting Concerns
+   Every cross-lane arrow in the diagram is an authenticated, RBAC-checked API call.
+   Every status change broadcasts via WebSocket to relevant dashboards in real time.
+   Every business event is appended to the immutable audit log.
+   Premium-gated calls go through an entitlement check before executing.
+8. Technology Stack
+Layer                       Technology                             Purpose
+
+                            Next.js 14 + React, Tailwind CSS,
+Frontend                                                           SSR storefront, admin SPA, PWA
+                            Redux Toolkit, React Query
+
+Backend                     Node.js (NestJS) or Laravel (PHP)      REST APIs, queues, webhooks
+
+Database                    PostgreSQL 16                          Relational primary store
+
+Cache / Queue               Redis 7                                Sessions, cart, rate limits, job queue
+
+                                                                   Catalogue full-text and faceted
+Search                      Elasticsearch or Meilisearch
+                                                                   search
+
+Object Store                AWS S3 / GCS                           Images, PDFs, media assets
+
+Real-time                   Socket.IO / WebSockets                 Live order updates, inbox events
+
+                            JWT (15-min) + refresh (7d), OAuth
+Auth                                                               Stateless secure access
+                            2.0, 2FA (TOTP)
+
+                            Meta Graph API, TikTok Marketing
+Social APIs                                                        Post, schedule, analytics, inbox
+                            API
+
+Payments                    Stripe, eSewa, Khalti, PayPal          Checkout, refunds, subscriptions
+
+                            SendGrid / SMTP, Twilio / Sparrow
+Notifications                                                      Email, SMS, push
+                            SMS, FCM
+
+Search Infra                OpenSearch (managed) optional          Hosted scaling path
+
+                            AWS or GCP (EC2/EKS or GKE,
+Cloud                                                              Scalable infra, global edge
+                            CloudFront / Cloud CDN)
+
+Containers                  Docker + Kubernetes                    Service packaging and orchestration
+
+CI/CD                       GitHub Actions + Terraform             Automated build, test, deploy, IaC
+
+                            Sentry, Datadog / New Relic,
+Monitoring                                                         Errors, APM, infra metrics
+                            Prometheus + Grafana
+
+                            WAF (Cloudflare / AWS), TLS 1.3,
+Security                                                           Defence in depth
+                            AES-256, Vault for secrets
+
+                            Custom service in primary stack; PDF
+Accounting                                                         Premium module
+                            via Puppeteer
+
+
+
+8.1 Security Architecture
+   Authentication: short-lived JWT access tokens + rotating refresh tokens; OAuth 2.0 for social login; 2FA
+    (TOTP) enforced for Super Admin and Admin.
+   Authorization: every API route guarded by RBAC middleware; entitlement check for premium routes.
+   Encryption: AES-256 at rest, TLS 1.3 in transit, secrets in Vault / KMS.
+   Audit logging: every CRUD action captures user, timestamp, IP and payload diff.
+   Rate limiting and brute-force lockout on auth endpoints.
+   Periodic dependency scanning (Dependabot / Snyk), third-party pen test pre-launch, annual re-test
+    thereafter.
+   PCI scope minimisation: card data never touches our servers (Stripe Elements).
+   Data privacy: GDPR-aligned consent, data export, right-to-deletion flows.
+9. Database Design — Key Entities
+9.1 Identity & Access
+   users (id, email, phone, password_hash, status, two_fa_enabled, created_at).
+   roles (id, name, is_system).
+   permissions (id, code, description).
+   role_permissions (role_id, permission_id).
+   user_roles (user_id, role_id).
+
+9.2 Catalogue & Inventory
+   products (id, sku, name, slug, brand_id, category_id, base_price, status).
+   product_variants (id, product_id, sku, attributes_json, price, stock).
+   inventory (product_id, variant_id, on_hand, reserved, available, threshold).
+   stock_movements (id, sku, type, qty_change, balance_after, reference_id, user_id, created_at).
+   purchase_orders (id, supplier_id, status, expected_at, created_by).
+
+9.3 Orders & Fulfilment
+   orders (id, user_id, status, subtotal, discount, delivery_fee, tax, total, payment_method,
+    payment_status, address_id, courier_id, tracking_number, created_at).
+   order_items (id, order_id, product_id, variant_id, qty, unit_price, subtotal).
+   order_status_history (id, order_id, from_status, to_status, changed_by, created_at).
+   returns (id, order_id, reason, photos_json, status).
+   refunds (id, order_id, amount, gateway_ref, status, processed_at).
+
+9.4 Social Media
+   social_accounts (id, platform, account_id, oauth_token_enc, refresh_token_enc).
+   posts (id, content, media_urls_json, status, scheduled_at, published_at).
+   post_targets (post_id, social_account_id, platform_post_id, status).
+   inbox_messages (id, social_account_id, thread_id, body, direction, assigned_to, status).
+
+9.5 Premium Accounting
+   subscriptions (id, tenant_id, plan_code, billing_cycle, status, started_at, expires_at, gateway_ref).
+   plan_entitlements (plan_code, feature_code).
+   chart_of_accounts (id, code, name, type, parent_id).
+   journal_entries (id, posted_at, period_id, reference, source, created_by).
+   journal_lines (id, journal_id, account_id, debit, credit, currency).
+   tax_rates (id, code, rate_pct, jurisdiction, valid_from).
+   invoices (id, order_id, number, issued_at, total, tax_total, pdf_url).
+   audit_log (id, actor_id, action, entity, entity_id, before_json, after_json, ip, created_at).
+10. Delivery Roadmap
+Two work streams run in parallel: the Internal Platform (Admin + Operations) and the Customer Portal
+(Storefront + Tracking). The Premium Accounting module is sequenced after the operational platform is
+stable so it can consume real transactional data.
+    Phase                     Scope                        Duration                     Milestone
+
+                              Sprint 0 — repos, CI/CD,
+    Phase 0                   design system, API           2 weeks                      Foundations Ready
+                              skeleton
+
+                              Auth, RBAC, user
+    Phase 1                   management, Super            8 weeks                      Identity Layer
+                              Admin console
+
+                              Social Media Hub (Meta +
+    Phase 2                   TikTok), composer, inbox,    10 weeks                     Marketing Hub
+                              scheduler
+
+                              E-Commerce engine +
+                              Customer Storefront +
+    Phase 3                                                12 weeks                     Storefront Live
+                              Payments (eSewa, Khalti,
+                              Stripe, COD)
+
+                              Order Tracking + Inventory
+    Phase 4                   + Courier integration +      8 weeks                      Operations Engine
+                              CRM lite
+
+                              Reporting, dashboards,
+    Phase 5                                                5 weeks                      Intelligence Layer
+                              analytics consolidation
+
+                              Premium Accounting &
+    Phase 6                   Tax & Audit + Subscription   10 weeks                     Premium Tier
+                              billing
+
+                              QA, security audit (third-
+    Phase 7                   party), UAT, performance     5 weeks                      Go-Live
+                              tuning, launch
+
+With Phases 1–4 running with overlapping teams, total wall-clock time is approximately 12 months including the
+Premium tier. Without the Premium tier, launch is achievable in 9–10 months.
+
+10.1 Phase Dependencies
+     Phase 1 (Identity) must complete before any other module — every API depends on it.
+     Phases 2, 3 and 4 can run with overlapping teams once Phase 1 is stable.
+     Phase 5 needs at least one of Phase 2 / 3 / 4 in production to be meaningful.
+     Phase 6 (Premium) reads from Phases 3 and 4 — start no earlier than Phase 3 finish.
+     Phase 7 is a hard gate — no production traffic until security and UAT pass.
+11. Indicative Budget
+Budget figures are planning estimates; final numbers depend on team location (in-house, near-shore, off-shore),
+seniority mix and any reuse of existing components. Conversions use 1 USD ≈ 133 NPR.
+
+11.1 Build Cost — Team (12 months)
+                                                Monthly Cost
+ Role                     Count                                         12-mo Cost (USD)         12-mo Cost (NPR)
+                                                (USD)
+
+ Project / Delivery
+                          1                     4,500                   54,000                   ~ NPR 71.8 L
+ Manager
+
+ Backend Engineers        2                     4,500                   108,000                  ~ NPR 1.44 Cr
+
+ Frontend Engineers       2                     4,000                   96,000                   ~ NPR 1.28 Cr
+
+ Social API Specialist    1                     4,500                   54,000                   ~ NPR 71.8 L
+
+ DevOps / Cloud
+                          1                     5,000                   60,000                   ~ NPR 79.8 L
+ Engineer
+
+ UI / UX Designer         1                     3,500                   42,000                   ~ NPR 55.9 L
+
+ QA Engineer              1                     3,000                   36,000                   ~ NPR 47.9 L
+
+ Accounting-domain
+                          1 (6mo)               5,000                   30,000                   ~ NPR 39.9 L
+ Specialist (Phase 6)
+
+ Sub-total — Team         10                    —                       480,000                  ~ NPR 6.4 Cr
+
+
+
+11.2 Infrastructure & Third-Party (Year 1)
+ Item                                   Annual Cost (USD)                        Notes
+
+ Cloud (AWS / GCP) — compute, DB,
+                                        12,000 – 24,000                          Right-sized for ~50k MAU
+ CDN, S3
+
+ Managed PostgreSQL + Redis +
+                                        6,000 – 9,000                            RDS / ElastiCache / OpenSearch
+ Search
+
+ Stripe fees (variable)                 %2.9 + $0.30 per txn                     Pass-through
+
+ eSewa / Khalti merchant fees           1.5–2.5% per txn                         Negotiable at volume
+
+ SendGrid / Twilio / Sparrow SMS        1,800 – 4,800                            Depends on volume
+
+ Monitoring (Sentry + Datadog)          3,000 – 6,000                            Tiered by host count
+
+ Domain, SSL, WAF, DNS                  1,200                                    Cloudflare Pro tier
+ Security pen-test (one-off)            8,000 – 15,000                         Third-party audit pre-launch
+
+ Sub-total — Infra & 3rd-party          ≈ 32,000 – 60,000                      Excludes payment fees
+
+
+
+11.3 Contingency & Total
+ Item                                   Cost (USD)                             Cost (NPR)
+
+ Team (12 months)                       480,000                                ~ 6.4 Cr
+
+ Infrastructure & 3rd-party             ≈ 46,000 (mid)                         ~ 61.2 L
+
+ Contingency (15%)                      ≈ 79,000                               ~ 1.05 Cr
+
+ Total — Year 1                         ≈ 605,000                              ~ 8.05 Cr
+
+Reducing scope to MVP (drop Premium Accounting and TikTok integration) cuts build cost by roughly 25–30%. Off-
+shoring all engineering to Nepal / India can reduce team cost by 40–60%, bringing Year-1 cost into the USD 250–350k
+range.
+12. Risk Register & Mitigations
+Risk                          Likelihood   Impact   Mitigation
+
+                                                    Abstraction layer in code;
+Social API policy / pricing                         design swap-out path;
+                              Medium       High
+changes (Meta, TikTok)                              track official API
+                                                    changelogs.
+
+Payment gateway                                     Implement multiple
+downtime (eSewa /             Low          High     gateways with automatic
+Khalti / Stripe)                                    failover; clear retry UI.
+
+                                                    Strict change-control; new
+Scope creep delaying                                requests go to post-launch
+                              High         Medium
+launch                                              backlog; signed-off scope
+                                                    per phase.
+
+                                                    Privacy-by-design in Phase
+Data privacy / GDPR / local                         1: consent, export,
+                              Medium       High
+regulator gaps                                      deletion; legal review pre-
+                                                    launch.
+
+                                                    Load test before launch;
+Performance under flash-                            CDN + Redis caching;
+                              Medium       Medium
+sale load                                           queue-based order intake;
+                                                    auto-scaling.
+
+                                                    Documentation standards
+Key engineer departure                              from day 1; pair
+                              Low          Medium
+mid-build                                           programming; knowledge-
+                                                    sharing each sprint.
+
+                                                    Hire a domain specialist;
+                                                    double-entry test fixtures;
+Accounting module                                   reconciliation tooling;
+                              Medium       High
+accuracy issues                                     independent CA review
+                                                    before pricing as a paid
+                                                    product.
+
+                                                    Strong onboarding,
+                                                    scheduled health-check
+Premium subscription
+                              Medium       Medium   emails, in-app NPS;
+churn
+                                                    export-on-cancel reduces
+                                                    lock-in fear.
+
+Courier integration                                 Manual override path;
+                              Medium       Medium
+unreliability                                       tracking via courier-pulled
+                                                    status if webhook is silent
+                                        for >2h.
+
+                                        Daily FX feed; tenant
+Currency / FX fluctuation               chooses settlement
+                            Low   Low
+in pricing                              currency; quote-in-NPR
+                                        option.
+13. Success Metrics & KPIs
+13.1 Operational KPIs
+   Order processing time from payment confirmation to dispatch — target < 4 hours.
+   Cart-to-checkout conversion rate — target > 35%.
+   Checkout-to-paid conversion rate — target > 75%.
+   Average order-tracking events delivered per order — target ≥ 5.
+   Customer support ticket resolution time — target < 24 hours median.
+
+13.2 Marketing KPIs
+   Time saved per week on social management — target ≥ 40% vs manual tool switching.
+   Social engagement rate uplift — target +20% within 90 days post-launch.
+   Cross-channel post-failure rate — target < 0.5%.
+
+13.3 Technical KPIs
+   Platform uptime — target 99.9% monthly.
+   p95 API latency — target < 300 ms.
+   Zero critical security incidents in first 12 months post-launch.
+   Deployment frequency — target weekly to production.
+
+13.4 Premium / Commercial KPIs
+   Free-trial-to-paid conversion — target ≥ 20%.
+   Monthly recurring revenue (MRR) — target USD 25k by month 6 post-launch.
+   Churn — target < 4% monthly.
+   Net revenue retention — target > 105%.
+14. Recommended Team Structure
+   1 × Project / Delivery Manager — sprint planning, stakeholder communication.
+   2 × Backend Engineers — APIs, database, RBAC, payments, accounting service.
+   2 × Frontend Engineers — Next.js storefront and admin console.
+   1 × Social Media API Specialist — Meta and TikTok integrations, OAuth flows.
+   1 × DevOps / Cloud Engineer — infra, CI/CD, security, monitoring.
+   1 × UI / UX Designer — design system, wireframes, user testing.
+   1 × QA Engineer — test plans, automation, regression, UAT coordination.
+   1 × Accounting Domain Specialist (Phase 6) — CoA, tax rules, audit pack.
+Total: 9–10 FTE for the duration of the project, with the accounting specialist engaged only for the Phase 6 window (6
+months).
+
+
+
+15. Recommended Next Steps
+8. Stakeholder sign-off on this plan and on scope boundaries (especially the Premium tier and pricing).
+9. Apply for Meta Business API and TikTok Marketing API developer access (can take 2–4 weeks).
+10. Apply for eSewa and Khalti merchant accounts and sandbox credentials (1–2 weeks).
+11. Confirm backend framework (NestJS vs Laravel) and cloud provider (AWS vs GCP).
+12. Assemble the core team — start with PM, 1 BE, 1 FE, 1 designer; ramp up by Phase 2 kickoff.
+13. Sprint 0 (2 weeks): set up monorepo or polyrepo, CI/CD, design system, API skeleton, staging
+    environment.
+14. Begin Phase 1 (Identity & RBAC) — the foundation everything else depends on.
+15. Run a focused 4-week discovery with a Chartered Accountant before Phase 6 to lock down chart of
+    accounts, tax rules and audit pack format.
+16. Define pricing experiments for the Premium tier — competitive benchmark, WTP survey, lifetime-vs-
+    recurring breakeven analysis.
+17. Establish a post-launch operations runbook — on-call rota, incident playbook, weekly metrics review.
+
+
+            End of Report | Unified Marketing & E-Commerce Management Platform | v2.0 | May 2026
+
