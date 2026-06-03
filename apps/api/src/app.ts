@@ -11,6 +11,7 @@ import { logger } from './config/logger.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { healthRouter } from './routes/health.js';
 import { v1Router } from './routes/v1/index.js';
+import { wellKnownRouter } from './routes/wellKnown.js';
 
 export function createApp(): Express {
   const env = loadEnv();
@@ -58,6 +59,7 @@ export function createApp(): Express {
   );
 
   app.use('/', healthRouter);
+  app.use('/.well-known', wellKnownRouter);
   app.use('/api/v1', v1Router);
 
   app.use((_req, res) => {

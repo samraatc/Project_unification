@@ -23,13 +23,20 @@ const EnvSchema = z.object({
 
   CORS_ALLOWED_ORIGINS: z
     .string()
-    .default('http://localhost:3000,http://localhost:6006')
+    // Storefront 3000 + admin 3001 + storybook 6006. Admin runs at its own host (D-0005).
+    .default('http://localhost:3000,http://localhost:3001,http://localhost:6006')
     .transform((s) =>
       s
         .split(',')
         .map((x) => x.trim())
         .filter(Boolean),
     ),
+
+  STOREFRONT_BASE_URL: z.string().url().default('http://localhost:3000'),
+  ADMIN_BASE_URL: z.string().url().default('http://localhost:3001'),
+  /** Set to a parent domain (e.g. `.unified.example.com`) so the refresh cookie is
+   * shared between the storefront and admin hosts (D-0005). Empty string in dev. */
+  REFRESH_COOKIE_DOMAIN: z.string().default(''),
 
   SENTRY_DSN: z.string().optional(),
   DATADOG_API_KEY: z.string().optional(),

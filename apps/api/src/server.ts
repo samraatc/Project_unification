@@ -5,12 +5,17 @@ import { loadEnv } from './config/env.js';
 import { logger } from './config/logger.js';
 import { connectMongo, disconnectMongo } from './infra/mongo.js';
 import { connectRedis, disconnectRedis } from './infra/redis.js';
+import { seedIdentity } from './db/seed/runSeed.js';
 
 async function main(): Promise<void> {
   const env = loadEnv();
   const app = createApp();
 
   await Promise.all([connectMongo(), connectRedis()]);
+  // Idempotent — keeps the permission catalogue + built-in roles current on every deploy.
+  await seedIdentity('000000000000000000000001').catch((err) =>
+    logger.error({ err }, 'identity seed failed (continuing)'),
+  );
 
   const server = app.listen(env.API_PORT, () => {
     logger.info({ port: env.API_PORT, env: env.NODE_ENV }, 'api listening');

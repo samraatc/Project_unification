@@ -13,36 +13,98 @@ export const Password = z
 
 export const OtpCode = z.string().regex(/^\d{6}$/, 'OTP must be 6 digits');
 
-export const SignupRequest = z
+export const RegisterRequest = z
   .object({
     email: Email,
     password: Password,
     phone: Phone.optional(),
+    firstName: z.string().min(1).max(80).optional(),
+    lastName: z.string().min(1).max(80).optional(),
     acceptedTermsAt: z.string().datetime(),
   })
   .strict();
-export type SignupRequest = z.infer<typeof SignupRequest>;
+export type RegisterRequest = z.infer<typeof RegisterRequest>;
+
+export const VerifyEmailRequest = z
+  .object({
+    userId: z.string().min(1),
+    code: OtpCode,
+  })
+  .strict();
+export type VerifyEmailRequest = z.infer<typeof VerifyEmailRequest>;
+
+export const RequestPhoneOtpRequest = z
+  .object({
+    phone: Phone,
+  })
+  .strict();
+export type RequestPhoneOtpRequest = z.infer<typeof RequestPhoneOtpRequest>;
+
+export const VerifyPhoneRequest = z
+  .object({
+    phone: Phone,
+    code: OtpCode,
+  })
+  .strict();
+export type VerifyPhoneRequest = z.infer<typeof VerifyPhoneRequest>;
 
 export const LoginRequest = z
   .object({
-    email: Email,
+    identifier: z.union([Email, Phone]),
     password: Password,
     totp: OtpCode.optional(),
   })
   .strict();
 export type LoginRequest = z.infer<typeof LoginRequest>;
 
+export const PasswordForgotRequest = z
+  .object({
+    identifier: z.union([Email, Phone]),
+  })
+  .strict();
+export type PasswordForgotRequest = z.infer<typeof PasswordForgotRequest>;
+
+export const PasswordResetRequest = z
+  .object({
+    token: z.string().min(32).max(256),
+    newPassword: Password,
+  })
+  .strict();
+export type PasswordResetRequest = z.infer<typeof PasswordResetRequest>;
+
+export const PasswordChangeRequest = z
+  .object({
+    currentPassword: Password,
+    newPassword: Password,
+  })
+  .strict();
+export type PasswordChangeRequest = z.infer<typeof PasswordChangeRequest>;
+
+export const TotpSetupResponse = z.object({
+  otpauthUrl: z.string().url(),
+  backupCodes: z.array(z.string()).length(10),
+});
+export type TotpSetupResponse = z.infer<typeof TotpSetupResponse>;
+
+export const TotpVerifyRequest = z
+  .object({
+    code: OtpCode,
+  })
+  .strict();
+export type TotpVerifyRequest = z.infer<typeof TotpVerifyRequest>;
+
 export const TokenPair = z.object({
   accessToken: z.string(),
-  refreshToken: z.string(),
   expiresIn: z.number().int().positive(),
 });
 export type TokenPair = z.infer<typeof TokenPair>;
 
 export const JwtClaims = z.object({
   sub: z.string(),
+  tenantId: z.string(),
   roles: z.array(BuiltInRole.or(z.string())),
-  tenantId: z.string().optional(),
+  perms: z.array(z.string()).optional(),
+  amr: z.array(z.enum(['pwd', 'otp', 'oauth', 'totp'])).optional(),
   iat: z.number(),
   exp: z.number(),
 });
