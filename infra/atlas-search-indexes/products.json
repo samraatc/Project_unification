@@ -1,0 +1,31 @@
+{
+  "name": "products",
+  "definition": {
+    "mappings": {
+      "dynamic": false,
+      "fields": {
+        "tenantId": { "type": "objectId" },
+        "status": { "type": "token" },
+        "sku": { "type": "string", "analyzer": "lucene.keyword" },
+        "name": [
+          { "type": "string", "analyzer": "lucene.standard" },
+          { "type": "autocomplete", "tokenization": "edgeGram", "minGrams": 2, "maxGrams": 15 }
+        ],
+        "slug": { "type": "string", "analyzer": "lucene.keyword" },
+        "description": { "type": "string" },
+        "attributes": { "type": "document", "dynamic": true },
+        "brand": { "type": "objectId" },
+        "categories": { "type": "objectId" },
+        "basePrice": { "type": "number" },
+        "salePrice": { "type": "number" },
+        "rating": {
+          "type": "document",
+          "fields": {
+            "avg": { "type": "number" },
+            "count": { "type": "number" }
+          }
+        }
+      }
+    }
+  }
+}

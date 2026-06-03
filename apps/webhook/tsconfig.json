@@ -1,0 +1,6 @@
+{
+  "extends": "@unified/tsconfig/node.json",
+  "compilerOptions": { "outDir": "dist", "rootDir": "src", "baseUrl": "." },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

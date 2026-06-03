@@ -1,0 +1,37 @@
+{
+  "name": "@unified/webhook",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Inbound webhooks — Stripe, eSewa, Khalti, PayPal, Pathao, Aramex, Meta, TikTok.",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsup src/server.ts --format esm --target node20 --clean --sourcemap",
+    "start": "node dist/server.js",
+    "lint": "eslint \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "ioredis": "^5.4.1",
+    "mongoose": "^8.5.2",
+    "pino": "^9.3.2",
+    "pino-http": "^10.2.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.14.14",
+    "@types/supertest": "^6.0.2",
+    "@unified/eslint-config": "workspace:*",
+    "@unified/tsconfig": "workspace:*",
+    "eslint": "^8.57.0",
+    "supertest": "^7.0.0",
+    "tsup": "^8.2.4",
+    "tsx": "^4.17.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}

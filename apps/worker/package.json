@@ -1,0 +1,33 @@
+{
+  "name": "@unified/worker",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "BullMQ workers — email, SMS, push, social publish, accounting (Phase 6).",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsup src/index.ts --format esm --target node20 --clean --sourcemap",
+    "start": "node dist/index.js",
+    "lint": "eslint \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "bullmq": "^5.12.10",
+    "dotenv": "^16.4.5",
+    "ioredis": "^5.4.1",
+    "mongoose": "^8.5.2",
+    "pino": "^9.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.14",
+    "@unified/eslint-config": "workspace:*",
+    "@unified/tsconfig": "workspace:*",
+    "eslint": "^8.57.0",
+    "tsup": "^8.2.4",
+    "tsx": "^4.17.0",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.5"
+  }
+}

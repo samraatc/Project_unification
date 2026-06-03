@@ -7,6 +7,7 @@ import {
   LayoutDashboard,
   LogOut,
   ScrollText,
+  Send,
   ShieldCheck,
   Users,
 } from 'lucide-react';
@@ -34,6 +35,7 @@ interface NavItem {
 
 const NAV: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/social', label: 'Social hub', icon: Send, permission: 'social.read' },
   { href: '/users', label: 'Users', icon: Users, permission: 'users.read' },
   { href: '/roles', label: 'Roles', icon: ShieldCheck, permission: 'roles.read' },
   { href: '/audit', label: 'Audit log', icon: ScrollText, permission: 'audit.read' },
