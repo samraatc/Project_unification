@@ -67,6 +67,36 @@ All `tenantId` fields default to the ObjectId `000000000000000000000001` for v1
 single-tenant operation. The field is kept on every collection so multi-tenant is a
 configuration switch rather than a migration (Database.md §1).
 
+## D-0007 — Invoice PDF library = `pdfkit` for v1
+**Date:** 2026-06-03 · **Phase:** 3 · **Decided by:** Engineering
+
+`pdfkit` chosen over `puppeteer` for invoice rendering. Lower runtime cost, no
+Chromium dependency, sufficient fidelity for transactional invoices. Revisit with
+marketing if richer templates are needed for premium plans. Affects
+`apps/api/src/services/invoices/invoice.service.ts` and the `apps/worker` invoice
+generation queue.
+
+## D-0008 — Stripe Elements over Stripe Checkout
+**Date:** 2026-06-03 · **Phase:** 3 · **Decided by:** Engineering
+
+Stripe Elements keeps the payment form inside the storefront (preserves Neumorphic
+visual control) while keeping PCI scope at SAQ-A (no card data ever touches our
+servers). Stripe Checkout would simplify integration but breaks the visual brand.
+Affects `apps/api/src/services/payments/stripe.gateway.ts` and the storefront
+`/checkout` payment step.
+
+## D-0009 — Search backend selection
+**Date:** 2026-06-03 · **Phase:** 3 · **Decided by:** Engineering
+
+Three backends, switched via `SEARCH_BACKEND` env var:
+- `atlas` (default in staging/prod) — MongoDB Atlas Search with the index spec at
+  `infra/atlas-search-indexes/products.json`.
+- `mongo` (default in dev/test) — regex fallback so `mongodb-memory-server` works.
+- `meili` (reserved for self-hosted enterprise tenants) — Meilisearch adapter.
+
+The fallback path is deliberate: CI can run search tests without Atlas, and
+self-hosted tenants who cannot use Atlas have a documented path.
+
 ---
 
 ## How to add an entry

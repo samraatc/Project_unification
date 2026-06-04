@@ -6,7 +6,11 @@ import pino from 'pino';
 import pinoHttp from 'pino-http';
 
 import { env } from './config.js';
+import { esewaWebhook } from './handlers/esewa.js';
+import { khaltiWebhook } from './handlers/khalti.js';
 import { metaWebhook } from './handlers/meta.js';
+import { paypalWebhook } from './handlers/paypal.js';
+import { stripeWebhook } from './handlers/stripe.js';
 import { tiktokWebhook } from './handlers/tiktok.js';
 
 const logger = pino({ level: 'info', base: { service: 'webhook', env: env.NODE_ENV } });
@@ -37,7 +41,13 @@ async function main(): Promise<void> {
 
   app.post('/webhooks/tiktok', tiktokWebhook);
 
-  // Stripe/eSewa/Khalti/PayPal/Pathao/Aramex handlers land in Phase 3 + 4.
+  // Phase 3 — payment provider webhooks.
+  app.post('/webhooks/stripe', stripeWebhook);
+  app.post('/webhooks/esewa', esewaWebhook);
+  app.post('/webhooks/khalti', khaltiWebhook);
+  app.post('/webhooks/paypal', paypalWebhook);
+
+  // Pathao/Aramex courier handlers land in Phase 4.
   app.use((_req, res) => res.status(404).send('Not Found'));
 
   const server = app.listen(env.WEBHOOK_PORT, () => {

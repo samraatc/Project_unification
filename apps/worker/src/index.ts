@@ -5,6 +5,7 @@ import IORedis from 'ioredis';
 import pino from 'pino';
 
 import { env } from './config.js';
+import { startAbandonedCheckoutWorker } from './queues/abandonedCheckout.worker.js';
 import { startSocialPublishWorker } from './queues/socialPublish.worker.js';
 
 const logger = pino({
@@ -16,7 +17,10 @@ async function main(): Promise<void> {
   await mongoose.connect(env.MONGO_URI);
   const redis = new IORedis(env.REDIS_URL, { maxRetriesPerRequest: null });
 
-  const workers = [startSocialPublishWorker(redis, logger)];
+  const workers = [
+    startSocialPublishWorker(redis, logger),
+    startAbandonedCheckoutWorker(redis, logger),
+  ];
 
   const shutdown = async (signal: string): Promise<void> => {
     logger.info({ signal }, 'worker shutdown received');
