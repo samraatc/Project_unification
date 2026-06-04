@@ -10,21 +10,28 @@ import {
   searchRouter,
 } from './catalogue.js';
 import { cartRouter, checkoutRouter } from './cart.js';
+import { couponsRouter } from './coupons.js';
+import { couriersRouter } from './couriers.js';
+import { customersRouter } from './customers.js';
+import {
+  inventoryRouter,
+  purchaseOrdersRouter,
+  stockMovementsRouter,
+} from './inventory.js';
 import { meRouter } from './me.js';
 import { ordersRouter } from './orders.js';
 import { pingRouter } from './ping.js';
 import { permissionsRouter, rolesRouter } from './roles.js';
 import { reviewsRouter, wishlistRouter } from './reviews.js';
 import { socialRouter } from './social.js';
-import { couponsRouter } from './coupons.js';
 import { usersRouter } from './users.js';
 
 export const v1Router: Router = Router();
 
-// Phase 0 — smoke.
+// Phase 0
 v1Router.use('/', pingRouter);
 
-// Phase 1 — Identity & RBAC.
+// Phase 1
 v1Router.use('/auth', authRouter);
 v1Router.use('/me', meRouter);
 v1Router.use('/users', usersRouter);
@@ -32,10 +39,10 @@ v1Router.use('/roles', rolesRouter);
 v1Router.use('/permissions', permissionsRouter);
 v1Router.use('/audit', auditRouter);
 
-// Phase 2 — Social Hub.
+// Phase 2
 v1Router.use('/social', socialRouter);
 
-// Phase 3 — E-Commerce.
+// Phase 3
 v1Router.use('/products', productsRouter);
 v1Router.use('/categories', categoriesRouter);
 v1Router.use('/brands', brandsRouter);
@@ -48,6 +55,9 @@ v1Router.use('/cart', cartRouter);
 v1Router.use('/checkout', checkoutRouter);
 v1Router.use('/orders', ordersRouter);
 
-// Phase 4 will mount: inventoryRouter, courierRouter, crmRouter (full lifecycle).
-// Phase 5 will mount: analyticsRouter, reportsRouter.
-// Phase 6 will mount: accountingRouter, taxRouter, billingRouter, subscriptionRouter.
+// Phase 4 — Operations + CRM Lite
+v1Router.use('/inventory', inventoryRouter);
+v1Router.use('/purchase-orders', purchaseOrdersRouter);
+v1Router.use('/stock-movements', stockMovementsRouter);
+v1Router.use('/couriers', couriersRouter);
+v1Router.use('/customers', customersRouter);

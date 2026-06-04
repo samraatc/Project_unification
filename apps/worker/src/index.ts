@@ -6,6 +6,7 @@ import pino from 'pino';
 
 import { env } from './config.js';
 import { startAbandonedCheckoutWorker } from './queues/abandonedCheckout.worker.js';
+import { startNotificationsDispatchWorker } from './queues/notificationsDispatch.worker.js';
 import { startSocialPublishWorker } from './queues/socialPublish.worker.js';
 
 const logger = pino({
@@ -20,6 +21,7 @@ async function main(): Promise<void> {
   const workers = [
     startSocialPublishWorker(redis, logger),
     startAbandonedCheckoutWorker(redis, logger),
+    startNotificationsDispatchWorker(redis, logger),
   ];
 
   const shutdown = async (signal: string): Promise<void> => {

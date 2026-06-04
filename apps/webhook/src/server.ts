@@ -6,6 +6,7 @@ import pino from 'pino';
 import pinoHttp from 'pino-http';
 
 import { env } from './config.js';
+import { makeCourierHandler } from './handlers/courier.js';
 import { esewaWebhook } from './handlers/esewa.js';
 import { khaltiWebhook } from './handlers/khalti.js';
 import { metaWebhook } from './handlers/meta.js';
@@ -47,7 +48,9 @@ async function main(): Promise<void> {
   app.post('/webhooks/khalti', khaltiWebhook);
   app.post('/webhooks/paypal', paypalWebhook);
 
-  // Pathao/Aramex courier handlers land in Phase 4.
+  // Phase 4 — courier scan-event webhooks.
+  app.post('/webhooks/pathao', makeCourierHandler('pathao'));
+  app.post('/webhooks/aramex', makeCourierHandler('aramex'));
   app.use((_req, res) => res.status(404).send('Not Found'));
 
   const server = app.listen(env.WEBHOOK_PORT, () => {

@@ -2,8 +2,10 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import {
+  Boxes,
   ChevronLeft,
   ChevronRight,
+  HeartHandshake,
   LayoutDashboard,
   LogOut,
   Package,
@@ -39,6 +41,8 @@ const NAV: NavItem[] = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/catalogue', label: 'Catalogue', icon: Package, permission: 'products.read' },
   { href: '/orders', label: 'Orders', icon: ShoppingBag, permission: 'orders.read' },
+  { href: '/inventory', label: 'Inventory', icon: Boxes, permission: 'inventory.read' },
+  { href: '/customers', label: 'Customers', icon: HeartHandshake, permission: 'users.read' },
   { href: '/social', label: 'Social hub', icon: Send, permission: 'social.read' },
   { href: '/users', label: 'Users', icon: Users, permission: 'users.read' },
   { href: '/roles', label: 'Roles', icon: ShieldCheck, permission: 'roles.read' },

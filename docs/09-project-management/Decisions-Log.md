@@ -97,6 +97,33 @@ Three backends, switched via `SEARCH_BACKEND` env var:
 The fallback path is deliberate: CI can run search tests without Atlas, and
 self-hosted tenants who cannot use Atlas have a documented path.
 
+## D-0010 — SMS routing: Sparrow for NPR, Twilio for everything else
+**Date:** 2026-06-04 · **Phase:** 4 · **Decided by:** Engineering
+
+E.164 numbers starting with `+977` route to Sparrow SMS; all other numbers route
+to Twilio. The decision lives in
+`apps/api/src/services/notifications/channels/sms.ts`. The caller imports a single
+`smsChannel` and never sees the split.
+
+## D-0011 — Notifications outbox is always used, even in dev
+**Date:** 2026-06-04 · **Phase:** 4 · **Decided by:** Engineering
+
+Domain code never calls the SMS / email / push adapters directly. Every event
+writes a row to `notificationOutbox` and the `notifications-dispatch` worker
+drains it. This keeps one code path for dev / staging / production and makes
+testing trivial (assert against the outbox collection).
+
+## D-0012 — Courier webhook signature schemes per provider
+**Date:** 2026-06-04 · **Phase:** 4 · **Decided by:** Engineering
+
+- Pathao: `Authorization: Bearer <shared-secret>` + `X-Pathao-Signature: <hmac>`.
+- Aramex: `X-Aramex-Signature: sha256=<hmac>`.
+
+Both adapters live behind a `CourierProvider` contract so adding DHL/UPS later
+is a one-file PR (`apps/api/src/services/couriers/providers/<provider>.ts`).
+The shared secret is stored ciphertext in `couriers.webhookSecretCipher`,
+decrypted in-memory at webhook time, rotated via admin UI.
+
 ---
 
 ## How to add an entry

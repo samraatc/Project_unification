@@ -24,3 +24,12 @@ export { Review, type ReviewDoc } from './review.model.js';
 export { Cart, type CartDoc } from './cart.model.js';
 export { CheckoutSession, type CheckoutSessionDoc } from './checkoutSession.model.js';
 export { Order, type OrderDoc } from './order.model.js';
+
+// Phase 4 — Operations + CRM Lite
+export { PurchaseOrder, type PurchaseOrderDoc } from './purchaseOrder.model.js';
+export { Courier, type CourierDoc } from './courier.model.js';
+export { NotificationOutbox, type NotificationOutboxDoc } from './notificationOutbox.model.js';
+export { Return, type ReturnDoc } from './return.model.js';
+export { Refund, type RefundDoc } from './refund.model.js';
+export { CustomerTag, type CustomerTagDoc } from './customerTag.model.js';
+export { CommunicationLog, type CommunicationLogDoc } from './communicationLog.model.js';
