@@ -6,7 +6,10 @@ import pino from 'pino';
 
 import { env } from './config.js';
 import { startAbandonedCheckoutWorker } from './queues/abandonedCheckout.worker.js';
+import { startAuditChainWorker } from './queues/auditChain.worker.js';
+import { startDunningRetryWorker } from './queues/dunningRetry.worker.js';
 import { startNotificationsDispatchWorker } from './queues/notificationsDispatch.worker.js';
+import { startReportsDispatchWorker } from './queues/reportsDispatch.worker.js';
 import { startSocialPublishWorker } from './queues/socialPublish.worker.js';
 
 const logger = pino({
@@ -22,6 +25,9 @@ async function main(): Promise<void> {
     startSocialPublishWorker(redis, logger),
     startAbandonedCheckoutWorker(redis, logger),
     startNotificationsDispatchWorker(redis, logger),
+    startReportsDispatchWorker(redis, logger),
+    startDunningRetryWorker(redis, logger),
+    startAuditChainWorker(redis, logger),
   ];
 
   const shutdown = async (signal: string): Promise<void> => {

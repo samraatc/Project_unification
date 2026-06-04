@@ -124,6 +124,34 @@ is a one-file PR (`apps/api/src/services/couriers/providers/<provider>.ts`).
 The shared secret is stored ciphertext in `couriers.webhookSecretCipher`,
 decrypted in-memory at webhook time, rotated via admin UI.
 
+## D-0013 — Charting library = Recharts
+**Date:** 2026-06-04 · **Phase:** 5 · **Decided by:** Engineering
+
+Recharts (already in `packages/design-system` peer deps from Phase 0). Reasons:
+SVG output is screenshot-friendly for PDF/PNG exports; matches the Neumorphic
+palette via design tokens; React-first API keeps server/client boundary clean.
+Phase 5 admin dashboards ship inline progress bars; full Recharts visualisation
+lands with the dep install in the Phase 5.1 follow-up.
+
+## D-0014 — Report formats: CSV + XLSX + PDF
+**Date:** 2026-06-04 · **Phase:** 5 · **Decided by:** Engineering
+
+- **CSV** — always-on, no extra dependency, handles every report dataset.
+- **XLSX** — `exceljs` follow-up; the API contract is already set behind
+  `formats.ts`.
+- **PDF** — reuses `pdfkit` from D-0007 (no second PDF dependency).
+
+Other formats (PNG, ICS for calendar reports) deferred to post-launch.
+
+## D-0015 — Analytics cache TTL = 5 minutes, no event invalidation in v1
+**Date:** 2026-06-04 · **Phase:** 5 · **Decided by:** Engineering
+
+Cached responses live in Redis keyed on `{endpoint, tenantId, sha256(query)}`
+with a fixed 5-minute TTL. Event-driven invalidation
+(`invalidateAnalytics('sales', tenantId)`) is wired but unhooked in v1;
+Phase 7 SLI dashboards will quantify whether the per-event hook is worth the
+write-path complexity.
+
 ---
 
 ## How to add an entry

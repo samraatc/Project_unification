@@ -33,3 +33,20 @@ export { Return, type ReturnDoc } from './return.model.js';
 export { Refund, type RefundDoc } from './refund.model.js';
 export { CustomerTag, type CustomerTagDoc } from './customerTag.model.js';
 export { CommunicationLog, type CommunicationLogDoc } from './communicationLog.model.js';
+
+// Phase 5 — Reports
+export { ScheduledReport, type ScheduledReportDoc } from './scheduledReport.model.js';
+export { ReportArtefact, type ReportArtefactDoc } from './reportArtefact.model.js';
+
+// Phase 6 — Premium Accounting + Subscription
+export { Subscription, type SubscriptionDoc } from './subscription.model.js';
+export { ChartOfAccounts, type ChartOfAccountsDoc } from './chartOfAccounts.model.js';
+export { JournalEntry, type JournalEntryDoc } from './journalEntry.model.js';
+export { AccountingPeriod, type AccountingPeriodDoc } from './accountingPeriod.model.js';
+export { TaxRate, type TaxRateDoc } from './taxRate.model.js';
+export { Invoice, type InvoiceDoc } from './invoice.model.js';
+export { BankAccount, type BankAccountDoc } from './bankAccount.model.js';
+export { BankTransaction, type BankTransactionDoc } from './bankTransaction.model.js';
+export { Budget, type BudgetDoc } from './budget.model.js';
+export { FxRate, type FxRateDoc } from './fxRate.model.js';
+export { AuditChainHead, type AuditChainHeadDoc } from './auditChainHead.model.js';

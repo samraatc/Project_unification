@@ -1,7 +1,10 @@
 import { Router } from 'express';
 
+import { accountingRouter } from './accounting.js';
+import { analyticsRouter } from './analytics.js';
 import { auditRouter } from './audit.js';
 import { authRouter } from './auth.js';
+import { billingRouter } from './billing.js';
 import {
   brandsRouter,
   categoriesRouter,
@@ -22,13 +25,13 @@ import { meRouter } from './me.js';
 import { ordersRouter } from './orders.js';
 import { pingRouter } from './ping.js';
 import { permissionsRouter, rolesRouter } from './roles.js';
+import { reportsRouter } from './reports.js';
 import { reviewsRouter, wishlistRouter } from './reviews.js';
 import { socialRouter } from './social.js';
 import { usersRouter } from './users.js';
 
 export const v1Router: Router = Router();
 
-// Phase 0
 v1Router.use('/', pingRouter);
 
 // Phase 1
@@ -55,9 +58,17 @@ v1Router.use('/cart', cartRouter);
 v1Router.use('/checkout', checkoutRouter);
 v1Router.use('/orders', ordersRouter);
 
-// Phase 4 — Operations + CRM Lite
+// Phase 4
 v1Router.use('/inventory', inventoryRouter);
 v1Router.use('/purchase-orders', purchaseOrdersRouter);
 v1Router.use('/stock-movements', stockMovementsRouter);
 v1Router.use('/couriers', couriersRouter);
 v1Router.use('/customers', customersRouter);
+
+// Phase 5 — Analytics + reports
+v1Router.use('/analytics', analyticsRouter);
+v1Router.use('/reports', reportsRouter);
+
+// Phase 6 — Premium Accounting + Subscription
+v1Router.use('/accounting', accountingRouter);
+v1Router.use('/billing', billingRouter);

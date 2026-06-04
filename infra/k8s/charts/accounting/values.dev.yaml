@@ -1,0 +1,10 @@
+replicaCount: 1
+
+image:
+  tag: dev-latest
+
+autoscaling:
+  enabled: false
+
+ingress:
+  host: accounting.dev.unified.example.com

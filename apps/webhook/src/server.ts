@@ -6,6 +6,7 @@ import pino from 'pino';
 import pinoHttp from 'pino-http';
 
 import { env } from './config.js';
+import { makeBillingHandler } from './handlers/billing.js';
 import { makeCourierHandler } from './handlers/courier.js';
 import { esewaWebhook } from './handlers/esewa.js';
 import { khaltiWebhook } from './handlers/khalti.js';
@@ -51,6 +52,12 @@ async function main(): Promise<void> {
   // Phase 4 — courier scan-event webhooks.
   app.post('/webhooks/pathao', makeCourierHandler('pathao'));
   app.post('/webhooks/aramex', makeCourierHandler('aramex'));
+
+  // Phase 6 — subscription billing webhooks (separate from FR-007 payment webhooks).
+  app.post('/webhooks/billing/stripe', makeBillingHandler('stripe'));
+  app.post('/webhooks/billing/esewa', makeBillingHandler('esewa'));
+  app.post('/webhooks/billing/khalti', makeBillingHandler('khalti'));
+
   app.use((_req, res) => res.status(404).send('Not Found'));
 
   const server = app.listen(env.WEBHOOK_PORT, () => {

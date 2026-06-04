@@ -1,0 +1,59 @@
+# Accounting portal — separate Ingress host from storefront + admin (D-0019).
+replicaCount: 1
+
+image:
+  repository: ghcr.io/samraatc/unified-accounting
+  tag: "0.0.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 3002
+
+containerPort: 3002
+
+env:
+  NODE_ENV: production
+
+envFromSecret: unified-accounting-secrets
+
+resources:
+  requests: { cpu: 100m, memory: 256Mi }
+  limits: { cpu: 500m, memory: 512Mi }
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 4
+  targetCPUUtilizationPercentage: 65
+
+ingress:
+  enabled: true
+  className: nginx
+  host: accounting.dev.unified.example.com
+  tls: true
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+probes:
+  liveness:
+    path: /healthz
+    initialDelaySeconds: 15
+    periodSeconds: 10
+    failureThreshold: 3
+  readiness:
+    path: /healthz
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    failureThreshold: 3
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop: ["ALL"]
