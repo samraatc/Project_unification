@@ -152,6 +152,43 @@ with a fixed 5-minute TTL. Event-driven invalidation
 Phase 7 SLI dashboards will quantify whether the per-event hook is worth the
 write-path complexity.
 
+## D-0016 — Chart of Accounts numbering scheme
+**Date:** 2026-06-04 · **Phase:** 6 · **Decided by:** Engineering (AICPA/IAS alignment)
+
+Account codes follow the universal four-digit prefix:
+`1xxx` Assets · `2xxx` Liabilities · `3xxx` Equity · `4xxx` Revenue ·
+`5xxx`/`6xxx` Expenses. Affects every CoA template
+(`apps/api/src/services/accounting/templates.ts`); the test suite asserts the
+prefix mapping per type.
+
+## D-0017 — Journal lines stored as positive minor units with a `side` enum
+**Date:** 2026-06-04 · **Phase:** 6 · **Decided by:** Engineering
+
+`journalEntries.lines[].amountMinor` is always a positive integer; the
+`side: 'dr' | 'cr'` field carries polarity. No signed amounts anywhere in the
+ledger — eliminates the entire class of ± bugs in aggregations. Balance checks
+sum debits and credits separately and assert equality with FX applied.
+
+## D-0018 — Tamper-evident audit chain = sha256(prevHash + canonicalJson(entry))
+**Date:** 2026-06-04 · **Phase:** 6 · **Decided by:** Engineering (Security-Requirements §8)
+
+For every premium audit log row, the chain hash is
+`sha256(prevHash + canonicalJson(entry))`. The chain head per tenant lives in
+`auditChainHeads`; the worker advances it every 30 s. `verifyChain(tenantId)`
+replays from genesis to attach a proof-of-integrity certificate to the audit
+pack export. Canonical JSON pins a subset of fields so re-renders don't change
+the hash.
+
+## D-0019 — Premium accounting portal at `accounting.<env>` (sister to admin per D-0005)
+**Date:** 2026-06-04 · **Phase:** 6 · **Decided by:** Engineering
+
+`apps/accounting` Next.js SPA on port 3002 deploys to
+`accounting.<env>.unified.example.com`. Shares authentication with the admin
+console via the parent-domain refresh cookie (`.unified.example.com`). Its
+own Helm chart (`infra/k8s/charts/accounting`), stricter CSP than admin (no
+third-party scripts at all). Sign-in delegates to the admin host. CI Docker
+matrix extended to include `accounting`.
+
 ---
 
 ## How to add an entry

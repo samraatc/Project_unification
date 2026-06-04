@@ -23,8 +23,8 @@ const EnvSchema = z.object({
 
   CORS_ALLOWED_ORIGINS: z
     .string()
-    // Storefront 3000 + admin 3001 + storybook 6006. Admin runs at its own host (D-0005).
-    .default('http://localhost:3000,http://localhost:3001,http://localhost:6006')
+    // Storefront 3000 + admin 3001 + accounting 3002 + storybook 6006 (D-0005 / D-0019).
+    .default('http://localhost:3000,http://localhost:3001,http://localhost:3002,http://localhost:6006')
     .transform((s) =>
       s
         .split(',')
